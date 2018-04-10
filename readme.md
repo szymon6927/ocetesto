@@ -34,6 +34,13 @@ Generally:
 
 Only required Python3
 
+### Output
+If all test passed output look like
+![Tests passed](/img/passed.JPG)
+ 
+otherwise
+
+![Tests passed](/img/fail.JPG) 
 
 ## License
 
