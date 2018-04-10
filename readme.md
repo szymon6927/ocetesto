@@ -10,9 +10,15 @@ Clone the repo
 ```
 https://github.com/szymon6927/ocetesto.git
 ```
-
+Next
+```
+cd ocetesto
+```
 After cloning I propose to set directory structure like bellow
 ![Example directory strucutre](/img/structure.JPG) 
+
+So just create `externals` directory copy your .exe program and directory
+with tests to previously created `externals` directory 
 
 With strucutre like this one usage is:
 ```
