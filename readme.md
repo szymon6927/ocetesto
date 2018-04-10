@@ -6,6 +6,12 @@ Algorithms and data strucutres exercises
 (!important - program tests only output not execution time)
 
 ## Getting Started
+Clone the repo
+```
+https://github.com/szymon6927/ocetesto.git
+```
+After cloning I propose to set directory strucure like bellow
+![Example directory strucutre](/img/structure.JPG) 
 
 exmaple usage:
 ```
