@@ -48,8 +48,7 @@ class Tester:
             print("Number of input test and output test are not the same, check tests item")
             exit()
 
-        print("Run test: {} input - {}, output {}".format(os.path.basename(self.all_input[0]),
-                                                          self.all_input[0],self.all_output[0]))
+        print("Run test: {}".format(os.path.basename(self.all_input[0])))
         program_output = subprocess.check_output('{} < {}'.format(self.bin_path, self.all_input[0]), shell=True)
         test_output = open(self.all_output[0], newline='\r\n').read()
 
@@ -57,6 +56,7 @@ class Tester:
             print("TEST PASSED!")
         else:
             print("TEST FAIL!")
+            exit()
 
         self.all_input.pop(0)
         self.all_output.pop(0)
