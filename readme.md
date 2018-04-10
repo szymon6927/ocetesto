@@ -10,13 +10,16 @@ Clone the repo
 ```
 https://github.com/szymon6927/ocetesto.git
 ```
-After cloning I propose to set directory strucure like bellow
+
+After cloning I propose to set directory structure like bellow
 ![Example directory strucutre](/img/structure.JPG) 
 
-exmaple usage:
+With strucutre like this one usage is:
 ```
-python main.py -tests /tests/ -bin main.exe
+python ocetesto.py -tests externals/tests/ -bin externals/main.exe
 ```
+
+Generally:
 * -tests path to directory with tests
 * -bin path to executable program
 
