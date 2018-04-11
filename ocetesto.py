@@ -76,8 +76,8 @@ def arg_parser():
     parser = argparse.ArgumentParser(description=description,
                                      formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument("-tests", required=True, help="path to tests")
-    parser.add_argument("-bin", required=True, help="path for exe program")
+    parser.add_argument("--tests", required=True, help="path to tests")
+    parser.add_argument("--bin", required=True, help="path for exe program")
 
     try:
         args = parser.parse_args()
