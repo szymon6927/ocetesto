@@ -11,18 +11,21 @@ class Tester:
         self.tests = os.path.abspath(tests)
         self.all_input = []
         self.all_output = []
+        self.test_count = 0
 
     def find_tests(self):
         abs_tests_path = os.path.abspath(self.tests)
 
         for item in os.listdir(abs_tests_path):
             if os.path.isdir(os.path.join(abs_tests_path, item)):
-                sub_directroy = os.path.join(abs_tests_path, item)
+                sub_directory = os.path.join(abs_tests_path, item)
 
-                for sub_file in os.listdir(sub_directroy):
-                    self.check_extension(sub_file, sub_directroy)
+                for sub_file in os.listdir(sub_directory):
+                    self.check_extension(sub_file, sub_directory)
             else:
                 self.check_extension(item, abs_tests_path)
+        
+        self.set_test_count()
 
     def check_extension(self, file_name, path):
         if file_name.endswith(".in"):
@@ -43,12 +46,15 @@ class Tester:
         else:
             return False
 
+    def set_test_count(self):
+        self.test_count = len(self.all_input)
+
     def checker(self):
         if not self.valid_test_count():
             print("Number of input test and output test are not the same, check tests item")
-            exit()
+            return
 
-        print("Run test: {}".format(os.path.basename(self.all_input[0])))
+        print("Run test: {}".format(os.path.basename(self.all_input[0])), end="\t\t")
         program_output = subprocess.check_output('{} < {}'.format(self.bin_path, self.all_input[0]), shell=True)
         test_output = open(self.all_output[0], newline='\r\n').read()
 
@@ -56,7 +62,8 @@ class Tester:
             print("TEST PASSED!")
         else:
             print("TEST FAIL!")
-            exit()
+            self.show_error(program_output.decode(), test_output)
+            return
 
         self.all_input.pop(0)
         self.all_output.pop(0)
@@ -64,6 +71,20 @@ class Tester:
         if self.all_input and self.all_output:
             self.checker()
 
+    def show_error(self, student_output, teacher_output):
+        print("----------------------------------------------------------")
+        print("\nThe difference is between\n")
+        print(student_output)
+        print("\nand this\n")
+        print(teacher_output)
+
+    def summary(self):
+        print("----------------------------------------------------------")
+        if self.all_input and self.all_output:
+            print("Failed!  {}/{}".format(len(self.all_input) ,self.test_count))
+        else:
+            print("Success!  {}/{}".format(self.test_count ,self.test_count))
+        print("----------------------------------------------------------")
 
 def arg_parser():
     description = """Program for automaticly run K.M Ocetkwieicz tests for
@@ -93,3 +114,4 @@ if __name__ == "__main__":
     octotest = Tester(args.bin, args.tests)
     octotest.find_tests()
     octotest.checker()
+    octotest.summary()
