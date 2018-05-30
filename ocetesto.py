@@ -3,6 +3,18 @@
 import os
 import subprocess
 import argparse
+import time
+from colorama import init
+from colorama import Fore, Back, Style
+import re
+
+
+def atoi(text):
+    return int(text) if text.isdigit() else text
+
+
+def natural_keys(text):
+    return [atoi(c) for c in re.split('(\d+)', text)]
 
 
 class Tester:
@@ -12,6 +24,21 @@ class Tester:
         self.all_input = []
         self.all_output = []
         self.test_count = 0
+
+    @staticmethod
+    def welcome():
+        print(""" {}
+  ______     ______  _______ .___________. _______     _______.___________.  ______   
+ /  __  \   /      ||   ____||           ||   ____|   /       |           | /  __  \  
+|  |  |  | |  ,----'|  |__   `---|  |----`|  |__     |   (----`---|  |----`|  |  |  | 
+|  |  |  | |  |     |   __|      |  |     |   __|     \   \       |  |     |  |  |  | 
+|  `--'  | |  `----.|  |____     |  |     |  |____.----)   |      |  |     |  `--'  | 
+ \______/   \______||_______|    |__|     |_______|_______/       |__|      \______/ 
+
+            autor: Szymon Miks
+            ETI PG, informatyka
+""".format(Fore.MAGENTA))
+        time.sleep(3)
 
     def find_tests(self):
         abs_tests_path = os.path.abspath(self.tests)
@@ -24,15 +51,21 @@ class Tester:
                     self.check_extension(sub_file, sub_directory)
             else:
                 self.check_extension(item, abs_tests_path)
-        
+
+        # sort list with naturl sorting
+        self.all_input.sort(key=natural_keys)
+        self.all_output.sort(key=natural_keys)
+
         self.set_test_count()
 
     def check_extension(self, file_name, path):
         if file_name.endswith(".in"):
-            self.all_input.append(os.path.abspath(os.path.join(path, file_name)))
+            self.all_input.append(os.path.abspath(
+                os.path.join(path, file_name)))
 
         if file_name.endswith(".out"):
-            self.all_output.append(os.path.abspath(os.path.join(path, file_name)))
+            self.all_output.append(os.path.abspath(
+                os.path.join(path, file_name)))
 
     def get_input(self):
         return self.all_input
@@ -51,17 +84,29 @@ class Tester:
 
     def checker(self):
         if not self.valid_test_count():
-            print("Number of input test and output test are not the same, check tests item")
+            print(
+                "{} Number of input test and output test are not the same, check tests item".format(Fore.RED))
             return
 
-        print("Run test: {}".format(os.path.basename(self.all_input[0])), end="\t\t")
-        program_output = subprocess.check_output('{} < {}'.format(self.bin_path, self.all_input[0]), shell=True)
+        print(Style.RESET_ALL)
+
+        print("{} Run test: {}".format(Fore.YELLOW,
+                                       os.path.basename(self.all_input[0])), end="\t\t")
+
+        start = time.time()
+        program_output = subprocess.check_output(
+            '{} < {}'.format(self.bin_path, self.all_input[0]), shell=True)
+        elapsed = (time.time() - start)
+
         test_output = open(self.all_output[0], newline='\r\n').read()
 
         if program_output == test_output.encode():
-            print("TEST PASSED!")
+            print("{} TEST PASSED! (execution time: {}s)".format(
+                Fore.GREEN, round(elapsed, 3)))
         else:
-            print("TEST FAIL!")
+            print("{} TEST FAIL! (execution time: {}s)".format(
+                Fore.RED, round(elapsed, 3)))
+            print(Style.RESET_ALL)
             self.show_error(program_output.decode(), test_output)
             return
 
@@ -73,32 +118,40 @@ class Tester:
 
     def show_error(self, student_output, teacher_output):
         print("----------------------------------------------------------")
-        print("\nThe difference is between\n")
+        print("\n{}The difference is between\n".format(Fore.RED))
         print(student_output)
-        print("\nand this\n")
+        print("\n{}and this\n".format(Fore.GREEN))
         print(teacher_output)
 
     def summary(self):
-        print("----------------------------------------------------------")
+        print("\n\n")
+        print(
+            "{}----------------------------------------------------------".format(Fore.CYAN))
         if self.all_input and self.all_output:
-            print("Failed!  {}/{}".format(len(self.all_input) ,self.test_count))
+            print("{}\t\tFailed!  {}/{}".format(Fore.RED, len(self.all_input),
+                                                self.test_count))
         else:
-            print("Success!  {}/{}".format(self.test_count ,self.test_count))
-        print("----------------------------------------------------------")
+            print("{}\t\tSuccess!  {}/{}".format(Fore.GREEN, self.test_count,
+                                                 self.test_count))
+        print(
+            "{}----------------------------------------------------------".format(Fore.CYAN))
+
 
 def arg_parser():
-    description = """Program for automaticly run K.M Ocetkwieicz tests for
+    description = """{} Program for automaticly run K.M Ocetkwieicz tests for
     Algorithms and data strucutres exercises
     (!important - program tests only output not execution time)
 
-    example usage "python %(prog)s -tests /tests/ -bin main.exe"
-    """
+    example usage {} "python %(prog)s -tests /tests/ -bin main.exe" {}
+    """.format(Fore.YELLOW, Fore.GREEN, Fore.CYAN)
 
     parser = argparse.ArgumentParser(description=description,
                                      formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument("--tests", required=True, help="path to tests")
     parser.add_argument("--bin", required=True, help="path for exe program")
+
+    print(Style.RESET_ALL)
 
     try:
         args = parser.parse_args()
@@ -110,6 +163,8 @@ def arg_parser():
 
 
 if __name__ == "__main__":
+    init()
+    Tester.welcome()
     args = arg_parser()
     octotest = Tester(args.bin, args.tests)
     octotest.find_tests()
